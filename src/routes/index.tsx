@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { Intro } from "@/components/Intro";
 import { BackgroundMusic } from "@/components/BackgroundMusic";
 
