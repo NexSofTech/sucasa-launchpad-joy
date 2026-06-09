@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Intro } from "@/components/Intro";
+import { BackgroundMusic } from "@/components/BackgroundMusic";
+
 
 
 export const Route = createFileRoute("/")({
