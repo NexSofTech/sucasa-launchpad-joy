@@ -3,17 +3,17 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Sucasa — Event Management in Lucknow" },
+      { title: "Sucasa — Event Management" },
       {
         name: "description",
         content:
-          "Sucasa is Lucknow's premier event management company, crafting unforgettable weddings, corporate events, and celebrations.",
+          "Sucasa is a premier event management company, crafting unforgettable weddings, corporate events, and celebrations.",
       },
-      { property: "og:title", content: "Sucasa — Event Management in Lucknow" },
+      { property: "og:title", content: "Sucasa — Event Management" },
       {
         property: "og:description",
         content:
-          "Sucasa is Lucknow's premier event management company, crafting unforgettable weddings, corporate events, and celebrations.",
+          "Sucasa is a premier event management company, crafting unforgettable weddings, corporate events, and celebrations.",
       },
     ],
   }),
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/")({
 
 const logoFont = {
   fontFamily: "'Jura', sans-serif",
-  fontWeight: 300,
+  fontWeight: 700,
   letterSpacing: "0.08em",
 };
 
@@ -44,7 +44,7 @@ function Index() {
             <Logo className="text-2xl sm:text-3xl" />
           </a>
           <ul className="hidden gap-8 text-xs uppercase tracking-[0.25em] text-muted-foreground md:flex">
-            <li><a href="#services" className="hover:text-foreground transition-colors">Services</a></li>
+            <li><a href="#upcoming" className="hover:text-foreground transition-colors">Upcoming Events</a></li>
             <li><a href="#why" className="hover:text-foreground transition-colors">Why Sucasa</a></li>
             <li><a href="#about" className="hover:text-foreground transition-colors">About</a></li>
             <li><a href="#contact" className="hover:text-foreground transition-colors">Contact</a></li>
@@ -66,7 +66,7 @@ function Index() {
 
           <div className="mt-10 flex items-center gap-3 text-xs uppercase tracking-[0.4em] text-muted-foreground">
             <span className="h-px w-10 bg-foreground/20" />
-            <span>Lucknow</span>
+            <span>Event Management</span>
             <span className="h-px w-10 bg-foreground/20" />
           </div>
 
@@ -79,20 +79,21 @@ function Index() {
         </div>
       </main>
 
-      {/* Services */}
-      <section id="services" className="border-t border-foreground/10 px-6 py-24 sm:px-10">
+      {/* Upcoming Events */}
+      <section id="upcoming" className="border-t border-foreground/10 px-6 py-24 sm:px-10">
         <div className="mx-auto max-w-6xl">
-          <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">What we do</p>
-          <h2 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">Services</h2>
+          <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">On the horizon</p>
+          <h2 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">Upcoming Events</h2>
           <div className="mt-12 grid gap-8 md:grid-cols-3">
             {[
-              { title: "Weddings", desc: "Bespoke wedding design, planning, and flawless execution from sangeet to vidaai." },
-              { title: "Corporate Events", desc: "Conferences, launches, and brand activations engineered to land with impact." },
-              { title: "Private Celebrations", desc: "Birthdays, anniversaries, and intimate soirées designed to be remembered." },
-            ].map((s) => (
-              <div key={s.title} className="border border-foreground/10 p-8 transition-colors hover:border-foreground/40">
-                <h3 className="text-xl font-semibold">{s.title}</h3>
-                <p className="mt-3 text-muted-foreground">{s.desc}</p>
+              { title: "Summer Gala 2026", date: "June 2026", desc: "An evening of elegance, live music, and curated experiences under the stars." },
+              { title: "Corporate Summit", date: "August 2026", desc: "A flagship gathering for industry leaders, innovators, and visionaries." },
+              { title: "Wedding Showcase", date: "October 2026", desc: "A preview of breathtaking setups, floral artistry, and bespoke celebrations." },
+            ].map((e) => (
+              <div key={e.title} className="border border-foreground/10 p-8 transition-colors hover:border-foreground/40">
+                <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">{e.date}</p>
+                <h3 className="mt-3 text-xl font-semibold">{e.title}</h3>
+                <p className="mt-3 text-muted-foreground">{e.desc}</p>
               </div>
             ))}
           </div>
@@ -120,7 +121,7 @@ function Index() {
           <div className="mt-16 grid gap-8 md:grid-cols-3">
             {[
               { title: "Detail-obsessed", desc: "Every napkin fold, every light cue, every cue card — accounted for." },
-              { title: "Local roots", desc: "Deeply networked across Lucknow's venues, artists, and craftsmen." },
+              { title: "Local roots", desc: "Deeply networked across premium venues, artists, and craftsmen." },
               { title: "End-to-end", desc: "Concept, design, production, and on-ground delivery under one roof." },
             ].map((b) => (
               <div key={b.title}>
@@ -138,11 +139,11 @@ function Index() {
           <div>
             <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">About</p>
             <h2 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
-              Crafting moments in the heart of Lucknow.
+              Crafting moments that last a lifetime.
             </h2>
           </div>
           <p className="text-lg leading-relaxed text-muted-foreground">
-            Sucasa is an event management studio rooted in Lucknow, dedicated to
+            Sucasa is an event management studio dedicated to
             transforming visions into living, breathing experiences. With an eye
             for detail and a passion for storytelling, we design events that
             linger long after the lights go down.
@@ -171,7 +172,7 @@ function Index() {
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Studio</p>
-              <p className="mt-2">Lucknow, India</p>
+              <p className="mt-2">India</p>
             </div>
           </div>
           <a
@@ -188,7 +189,7 @@ function Index() {
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
           <Logo className="text-xl" />
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            © {new Date().getFullYear()} Sucasa · Lucknow
+            © {new Date().getFullYear()} Sucasa
           </p>
         </div>
       </footer>
