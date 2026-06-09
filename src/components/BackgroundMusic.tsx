@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * Browsers block autoplay, so playback starts on first user gesture
  * (we also expose a toggle button).
  */
-export function BackgroundMusic() {
+export function BackgroundMusic({ enabled = true }: { enabled?: boolean }) {
   const [playing, setPlaying] = useState(false);
   const ctxRef = useRef<AudioContext | null>(null);
   const masterRef = useRef<GainNode | null>(null);
