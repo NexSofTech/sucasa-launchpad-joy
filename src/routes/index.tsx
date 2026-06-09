@@ -20,7 +20,19 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const scriptFont = { fontFamily: "'Great Vibes', cursive" };
+const logoFont = {
+  fontFamily: "'Jura', sans-serif",
+  fontWeight: 300,
+  letterSpacing: "0.08em",
+};
+
+function Logo({ className = "" }: { className?: string }) {
+  return (
+    <span className={className} style={logoFont}>
+      SUCASA
+    </span>
+  );
+}
 
 function Index() {
   return (
@@ -28,11 +40,12 @@ function Index() {
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-20 px-6 py-5 sm:px-10">
         <nav className="flex items-center justify-between">
-          <a href="#home" className="text-3xl leading-none sm:text-4xl" style={scriptFont}>
-            Sucasa
+          <a href="#home" className="leading-none">
+            <Logo className="text-2xl sm:text-3xl" />
           </a>
-          <ul className="hidden gap-8 text-sm uppercase tracking-[0.2em] text-muted-foreground md:flex">
+          <ul className="hidden gap-8 text-xs uppercase tracking-[0.25em] text-muted-foreground md:flex">
             <li><a href="#services" className="hover:text-foreground transition-colors">Services</a></li>
+            <li><a href="#why" className="hover:text-foreground transition-colors">Why Sucasa</a></li>
             <li><a href="#about" className="hover:text-foreground transition-colors">About</a></li>
             <li><a href="#contact" className="hover:text-foreground transition-colors">Contact</a></li>
           </ul>
@@ -56,6 +69,13 @@ function Index() {
             <span>Lucknow</span>
             <span className="h-px w-10 bg-foreground/20" />
           </div>
+
+          <a
+            href="#contact"
+            className="mt-12 inline-block border border-foreground px-8 py-3 text-xs uppercase tracking-[0.3em] transition-colors hover:bg-foreground hover:text-background"
+          >
+            Plan your event
+          </a>
         </div>
       </main>
 
@@ -66,13 +86,46 @@ function Index() {
           <h2 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">Services</h2>
           <div className="mt-12 grid gap-8 md:grid-cols-3">
             {[
-              { title: "Weddings", desc: "Bespoke wedding design, planning, and flawless execution." },
-              { title: "Corporate Events", desc: "Conferences, launches, and brand activations with impact." },
-              { title: "Private Celebrations", desc: "Birthdays, anniversaries, and intimate gatherings to remember." },
+              { title: "Weddings", desc: "Bespoke wedding design, planning, and flawless execution from sangeet to vidaai." },
+              { title: "Corporate Events", desc: "Conferences, launches, and brand activations engineered to land with impact." },
+              { title: "Private Celebrations", desc: "Birthdays, anniversaries, and intimate soirées designed to be remembered." },
             ].map((s) => (
               <div key={s.title} className="border border-foreground/10 p-8 transition-colors hover:border-foreground/40">
                 <h3 className="text-xl font-semibold">{s.title}</h3>
                 <p className="mt-3 text-muted-foreground">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why Sucasa */}
+      <section id="why" className="border-t border-foreground/10 px-6 py-24 sm:px-10">
+        <div className="mx-auto max-w-6xl">
+          <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">Why us</p>
+          <h2 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">Why Sucasa</h2>
+          <div className="mt-12 grid gap-10 md:grid-cols-4">
+            {[
+              { n: "10+", label: "Years of experience" },
+              { n: "250+", label: "Events delivered" },
+              { n: "100%", label: "In-house execution" },
+              { n: "24/7", label: "Client support" },
+            ].map((i) => (
+              <div key={i.label}>
+                <p className="text-5xl font-bold tracking-tight">{i.n}</p>
+                <p className="mt-3 text-sm uppercase tracking-[0.2em] text-muted-foreground">{i.label}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-16 grid gap-8 md:grid-cols-3">
+            {[
+              { title: "Detail-obsessed", desc: "Every napkin fold, every light cue, every cue card — accounted for." },
+              { title: "Local roots", desc: "Deeply networked across Lucknow's venues, artists, and craftsmen." },
+              { title: "End-to-end", desc: "Concept, design, production, and on-ground delivery under one roof." },
+            ].map((b) => (
+              <div key={b.title}>
+                <h3 className="text-lg font-semibold">{b.title}</h3>
+                <p className="mt-2 text-muted-foreground">{b.desc}</p>
               </div>
             ))}
           </div>
@@ -100,18 +153,32 @@ function Index() {
       {/* Contact */}
       <section id="contact" className="border-t border-foreground/10 px-6 py-24 sm:px-10">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">Get in touch</p>
+          <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">Contact us</p>
           <h2 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
             Let's create something unforgettable.
           </h2>
           <p className="mt-6 text-muted-foreground">
-            Reach out to plan your next event with Sucasa.
+            Tell us about your event and we'll be in touch within 24 hours.
           </p>
+          <div className="mt-10 grid gap-6 sm:grid-cols-3 text-sm">
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Email</p>
+              <a href="mailto:hello@sucasa.in" className="mt-2 block hover:underline">hello@sucasa.in</a>
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Phone</p>
+              <a href="tel:+910000000000" className="mt-2 block hover:underline">+91 00000 00000</a>
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Studio</p>
+              <p className="mt-2">Lucknow, India</p>
+            </div>
+          </div>
           <a
             href="mailto:hello@sucasa.in"
-            className="mt-8 inline-block border border-foreground px-8 py-3 text-sm uppercase tracking-[0.3em] transition-colors hover:bg-foreground hover:text-background"
+            className="mt-10 inline-block border border-foreground px-8 py-3 text-xs uppercase tracking-[0.3em] transition-colors hover:bg-foreground hover:text-background"
           >
-            hello@sucasa.in
+            Start a conversation
           </a>
         </div>
       </section>
@@ -119,7 +186,7 @@ function Index() {
       {/* Footer */}
       <footer className="border-t border-foreground/10 px-6 py-10 sm:px-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
-          <span className="text-2xl" style={scriptFont}>Sucasa</span>
+          <Logo className="text-xl" />
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
             © {new Date().getFullYear()} Sucasa · Lucknow
           </p>
