@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Intro } from "@/components/Intro";
+import { BackgroundMusic } from "@/components/BackgroundMusic";
+
 
 
 export const Route = createFileRoute("/")({
@@ -40,6 +42,8 @@ function Index() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Intro />
+      <BackgroundMusic />
+
 
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-20 px-6 py-5 sm:px-10">
