@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { Intro } from "@/components/Intro";
 import { BackgroundMusic } from "@/components/BackgroundMusic";
 
@@ -39,10 +40,12 @@ function Logo({ className = "" }: { className?: string }) {
 }
 
 function Index() {
+  const [introDone, setIntroDone] = useState(false);
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Intro />
-      <BackgroundMusic />
+      <Intro onDone={() => setIntroDone(true)} />
+      <BackgroundMusic enabled={introDone} />
+
 
 
       {/* Header */}

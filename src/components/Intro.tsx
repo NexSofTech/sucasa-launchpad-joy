@@ -10,8 +10,8 @@ const logoFont = {
  * Door-opening splash intro:
  * 1. Solid white screen
  * 2. SUCASA logo fades in
- * 3. Two white "doors" split apart revealing the page
- * 4. A soft cinematic chord swells via WebAudio
+ * 3. A katana "slice" sound triggers as two white "doors" split apart
+ * 4. onDone fires once the doors are fully out of frame
  */
 export function Intro({ onDone }: { onDone?: () => void }) {
   const [phase, setPhase] = useState<"logo" | "open" | "gone">("logo");
@@ -21,39 +21,65 @@ export function Intro({ onDone }: { onDone?: () => void }) {
     if (startedRef.current) return;
     startedRef.current = true;
 
-    // Soft cinematic chord (best effort — browsers may block until gesture)
     let ctx: AudioContext | null = null;
-    try {
-      const AC =
-        (window as unknown as { AudioContext?: typeof AudioContext; webkitAudioContext?: typeof AudioContext }).AudioContext ||
-        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-      if (AC) {
+    const AC =
+      (window as unknown as { AudioContext?: typeof AudioContext }).AudioContext ||
+      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (AC) {
+      try {
         ctx = new AC();
-        const now = ctx.currentTime;
-        const master = ctx.createGain();
-        master.gain.setValueAtTime(0, now);
-        master.gain.linearRampToValueAtTime(0.18, now + 1.2);
-        master.gain.linearRampToValueAtTime(0.22, now + 2.8);
-        master.gain.linearRampToValueAtTime(0, now + 4.2);
-        master.connect(ctx.destination);
-
-        // C major-ish chord with a low pad
-        [130.81, 196.0, 261.63, 392.0].forEach((freq, i) => {
-          const o = ctx!.createOscillator();
-          o.type = i === 0 ? "sine" : "triangle";
-          o.frequency.value = freq;
-          const g = ctx!.createGain();
-          g.gain.value = i === 0 ? 0.5 : 0.25;
-          o.connect(g).connect(master);
-          o.start(now);
-          o.stop(now + 4.3);
-        });
+      } catch {
+        ctx = null;
       }
-    } catch {
-      // ignore audio errors
     }
 
-    const t1 = setTimeout(() => setPhase("open"), 1500);
+    const playKatanaSlice = (when: number) => {
+      if (!ctx) return;
+      const dur = 0.55;
+
+      // White noise buffer
+      const buffer = ctx.createBuffer(1, ctx.sampleRate * dur, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < data.length; i++) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+      }
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+
+      // Bandpass swept from high to low → metallic "shing"
+      const bp = ctx.createBiquadFilter();
+      bp.type = "bandpass";
+      bp.Q.value = 8;
+      bp.frequency.setValueAtTime(6000, when);
+      bp.frequency.exponentialRampToValueAtTime(900, when + dur);
+
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.0001, when);
+      noiseGain.gain.exponentialRampToValueAtTime(0.6, when + 0.02);
+      noiseGain.gain.exponentialRampToValueAtTime(0.0001, when + dur);
+
+      noise.connect(bp).connect(noiseGain).connect(ctx.destination);
+      noise.start(when);
+      noise.stop(when + dur);
+
+      // Pitched "ring" sweep for the blade tone
+      const osc = ctx.createOscillator();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(2400, when);
+      osc.frequency.exponentialRampToValueAtTime(380, when + dur * 0.9);
+      const oscGain = ctx.createGain();
+      oscGain.gain.setValueAtTime(0.0001, when);
+      oscGain.gain.exponentialRampToValueAtTime(0.25, when + 0.03);
+      oscGain.gain.exponentialRampToValueAtTime(0.0001, when + dur);
+      osc.connect(oscGain).connect(ctx.destination);
+      osc.start(when);
+      osc.stop(when + dur);
+    };
+
+    const t1 = setTimeout(() => {
+      setPhase("open");
+      if (ctx) playKatanaSlice(ctx.currentTime + 0.0);
+    }, 1500);
     const t2 = setTimeout(() => {
       setPhase("gone");
       onDone?.();
@@ -95,7 +121,6 @@ export function Intro({ onDone }: { onDone?: () => void }) {
             SUCASA
           </span>
         </div>
-        {/* subtle inner edge shadow when opening */}
         <div
           className="absolute top-0 right-0 h-full w-8 transition-opacity duration-500"
           style={{
