@@ -51,6 +51,7 @@ function Index() {
           src={logoAsset.url}
           alt="Sucasa"
           className="w-[min(80vw,520px)] select-none drop-shadow-[0_0_40px_oklch(1_0_0_/_0.15)]"
+          style={{ filter: "invert(1)" }}
           draggable={false}
         />
 
