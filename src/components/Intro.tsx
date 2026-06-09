@@ -33,52 +33,76 @@ export function Intro({ onDone }: { onDone?: () => void }) {
       }
     }
 
-    const playKatanaSlice = (when: number) => {
+    const playKatanaSlice = (start: number) => {
       if (!ctx) return;
-      const dur = 0.55;
+      const master = ctx.createGain();
+      master.gain.value = 1.0;
+      master.connect(ctx.destination);
 
-      // White noise buffer
-      const buffer = ctx.createBuffer(1, ctx.sampleRate * dur, ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < data.length; i++) {
-        data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
-      }
+      // 1) Sharp "whoosh" — short white noise burst, fast bandpass sweep high→low
+      const whooshDur = 0.22;
+      const noiseBuf = ctx.createBuffer(1, ctx.sampleRate * whooshDur, ctx.sampleRate);
+      const nd = noiseBuf.getChannelData(0);
+      for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
       const noise = ctx.createBufferSource();
-      noise.buffer = buffer;
+      noise.buffer = noiseBuf;
+      const nbp = ctx.createBiquadFilter();
+      nbp.type = "bandpass";
+      nbp.Q.value = 4;
+      nbp.frequency.setValueAtTime(8000, start);
+      nbp.frequency.exponentialRampToValueAtTime(600, start + whooshDur);
+      const ng = ctx.createGain();
+      ng.gain.setValueAtTime(0.0001, start);
+      ng.gain.exponentialRampToValueAtTime(0.9, start + 0.008);
+      ng.gain.exponentialRampToValueAtTime(0.0001, start + whooshDur);
+      noise.connect(nbp).connect(ng).connect(master);
+      noise.start(start);
+      noise.stop(start + whooshDur);
 
-      // Bandpass swept from high to low → metallic "shing"
-      const bp = ctx.createBiquadFilter();
-      bp.type = "bandpass";
-      bp.Q.value = 8;
-      bp.frequency.setValueAtTime(6000, when);
-      bp.frequency.exponentialRampToValueAtTime(900, when + dur);
+      // 2) Metallic "shing" — high resonant ring (two detuned partials)
+      const shingStart = start + 0.05;
+      const shingDur = 0.7;
+      [3200, 4800].forEach((f, i) => {
+        const o = ctx.createOscillator();
+        o.type = "sawtooth";
+        o.frequency.setValueAtTime(f, shingStart);
+        o.frequency.exponentialRampToValueAtTime(f * 0.55, shingStart + shingDur);
+        const bp = ctx.createBiquadFilter();
+        bp.type = "bandpass";
+        bp.Q.value = 22;
+        bp.frequency.setValueAtTime(f, shingStart);
+        bp.frequency.exponentialRampToValueAtTime(f * 0.55, shingStart + shingDur);
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, shingStart);
+        g.gain.exponentialRampToValueAtTime(i === 0 ? 0.35 : 0.22, shingStart + 0.015);
+        g.gain.exponentialRampToValueAtTime(0.0001, shingStart + shingDur);
+        o.connect(bp).connect(g).connect(master);
+        o.start(shingStart);
+        o.stop(shingStart + shingDur);
+      });
 
-      const noiseGain = ctx.createGain();
-      noiseGain.gain.setValueAtTime(0.0001, when);
-      noiseGain.gain.exponentialRampToValueAtTime(0.6, when + 0.02);
-      noiseGain.gain.exponentialRampToValueAtTime(0.0001, when + dur);
-
-      noise.connect(bp).connect(noiseGain).connect(ctx.destination);
-      noise.start(when);
-      noise.stop(when + dur);
-
-      // Pitched "ring" sweep for the blade tone
-      const osc = ctx.createOscillator();
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(2400, when);
-      osc.frequency.exponentialRampToValueAtTime(380, when + dur * 0.9);
-      const oscGain = ctx.createGain();
-      oscGain.gain.setValueAtTime(0.0001, when);
-      oscGain.gain.exponentialRampToValueAtTime(0.25, when + 0.03);
-      oscGain.gain.exponentialRampToValueAtTime(0.0001, when + dur);
-      osc.connect(oscGain).connect(ctx.destination);
-      osc.start(when);
-      osc.stop(when + dur);
+      // 3) Low thunk — short body impact when the blade lands
+      const thunkStart = start + 0.02;
+      const thunk = ctx.createOscillator();
+      thunk.type = "sine";
+      thunk.frequency.setValueAtTime(160, thunkStart);
+      thunk.frequency.exponentialRampToValueAtTime(45, thunkStart + 0.18);
+      const tg = ctx.createGain();
+      tg.gain.setValueAtTime(0.0001, thunkStart);
+      tg.gain.exponentialRampToValueAtTime(0.5, thunkStart + 0.005);
+      tg.gain.exponentialRampToValueAtTime(0.0001, thunkStart + 0.2);
+      thunk.connect(tg).connect(master);
+      thunk.start(thunkStart);
+      thunk.stop(thunkStart + 0.22);
     };
 
     const t1 = setTimeout(() => {
       setPhase("open");
-      if (ctx) playKatanaSlice(ctx.currentTime + 0.0);
+      if (ctx) {
+        // Resume in case context started suspended
+        ctx.resume?.().catch(() => {});
+        playKatanaSlice(ctx.currentTime + 0.0);
+      }
     }, 1500);
     const t2 = setTimeout(() => {
       setPhase("gone");
