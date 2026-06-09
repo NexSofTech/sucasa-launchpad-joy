@@ -39,6 +39,8 @@ function Logo({ className = "" }: { className?: string }) {
 function Index() {
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <Intro />
+
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-20 px-6 py-5 sm:px-10">
         <nav className="flex items-center justify-between">
