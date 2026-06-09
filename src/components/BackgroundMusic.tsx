@@ -111,20 +111,30 @@ export function BackgroundMusic({ enabled = true }: { enabled?: boolean }) {
     }, 1300);
   }, []);
 
-  // Try autoplay on first user interaction anywhere on the page
+  // Auto-start when enabled. Try immediately (may be blocked by browser),
+  // and fall back to starting on the first user gesture.
   useEffect(() => {
-    const onFirstGesture = () => {
-      start();
-      window.removeEventListener("pointerdown", onFirstGesture);
-      window.removeEventListener("keydown", onFirstGesture);
-    };
-    window.addEventListener("pointerdown", onFirstGesture, { once: true });
-    window.addEventListener("keydown", onFirstGesture, { once: true });
+    if (!enabled) return;
+    let cancelled = false;
+    (async () => {
+      await start();
+      if (cancelled) return;
+      // If context is suspended (autoplay blocked), wait for a gesture to resume.
+      const ctx = ctxRef.current;
+      if (ctx && ctx.state === "suspended") {
+        const resume = () => {
+          ctx.resume().catch(() => {});
+          window.removeEventListener("pointerdown", resume);
+          window.removeEventListener("keydown", resume);
+        };
+        window.addEventListener("pointerdown", resume, { once: true });
+        window.addEventListener("keydown", resume, { once: true });
+      }
+    })();
     return () => {
-      window.removeEventListener("pointerdown", onFirstGesture);
-      window.removeEventListener("keydown", onFirstGesture);
+      cancelled = true;
     };
-  }, [start]);
+  }, [enabled, start]);
 
   useEffect(() => {
     return () => {
